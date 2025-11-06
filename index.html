@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Volumen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f3f3f3;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    input[type="range"] {
+      width: 300px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #40B495;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #2e8a73;
+    }
+  </style>
+</head>
+<body>
+  <h1>Control de Volumen</h1>
+
+  <div class="control">
+    <label for="volumen">Volumen:</label>
+    <input type="range" id="volumen" min="0" max="1" step="0.01" value="0.5">
+  </div>
+
+  <button id="iniciar">🔊 Reproducir sonido</button>
+
+  <audio id="miAudio" src="sonidoAlarma.mp3" loop></audio>
+
+  <script>
+    const audio = document.getElementById("miAudio");
+    const volumen = document.getElementById("volumen");
+    const boton = document.getElementById("iniciar");
+
+    // Configurar volumen inicial
+    audio.volume = volumen.value;
+
+    // Cambiar volumen al mover la barra
+    volumen.addEventListener("input", () => {
+      audio.volume = volumen.value;
+    });
+
+    // Reproducir audio al hacer clic en el botón
+    boton.addEventListener("click", () => {
+      audio.play()
+        .then(() => {
+          boton.disabled = true;
+          boton.textContent = "Reproduciendo...";
+        })
+        .catch(error => {
+          console.error("Error al reproducir el audio:", error);
+        });
+    });
+  </script>
+</body>
+</html>
