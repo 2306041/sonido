@@ -1,435 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Volumen Surrealista Random — Control</title>
-<style>
-  :root{
-    --bg: #0b0712;
-    --neon: #00ffd7;
-    --accent: #ff00c1;
-    --panel-bg: rgba(255,255,255,0.03);
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Volumen Impráctico</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f3f3f3;
+    }
 
-  html,body{
-    height:100%;
-    margin:0;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    background: radial-gradient(circle at 20% 20%, #001122 0%, var(--bg) 40%, #04030a 100%);
-    color: #e6f9f7;
-    overflow:hidden;
-  }
+    h1 {
+      color: #333;
+    }
 
-  /* contenedor central */
-  .stage{
-    position:relative;
-    width:100%;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:24px;
-    padding:24px;
-    box-sizing:border-box;
-  }
+    .control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
 
-  /* panel principal */
-  .panel{
-    width:360px;
-    min-height:220px;
-    background:var(--panel-bg);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius:16px;
-    padding:18px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    backdrop-filter: blur(6px) saturate(150%);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    transition: transform .4s ease;
-  }
+    input[type="range"] {
+      width: 300px;
+      margin-top: 10px;
+    }
 
-  .panel.hyped { transform: rotate(-2deg) scale(1.02); }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #40B495;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
 
-  h1{
-    margin:0 0 8px 0;
-    font-size:18px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--neon);
-    text-shadow: 0 0 10px rgba(0,255,215,0.25);
-  }
-
-  .label{
-    font-size:13px;
-    opacity:.85;
-    margin-bottom:8px;
-  }
-
-  /* slider styling */
-  input[type="range"]{
-    width:90%;
-    appearance:none;
-    height:14px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-    border-radius:10px;
-    outline:none;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-  }
-  input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none;
-    width:28px;height:28px;border-radius:50%;
-    background:linear-gradient(180deg,var(--neon),var(--accent));
-    box-shadow: 0 0 14px rgba(0,255,215,0.25);
-    transform: translateY(-2px);
-    cursor:pointer;
-  }
-
-  /* botones */
-  .controls{
-    margin-top:14px;
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-  button{
-    padding:10px 12px;
-    border-radius:10px;
-    border: none;
-    cursor:pointer;
-    font-weight:700;
-    letter-spacing:.6px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2));
-    color: #001a1a;
-    min-width:96px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset 0 -2px 6px rgba(255,255,255,0.02);
-  }
-  button.primary{
-    background: linear-gradient(90deg, var(--neon), var(--accent));
-    color:#041515;
-    text-shadow:none;
-  }
-  button.ghost{
-    background:transparent;
-    color:var(--neon);
-    border:1px dashed rgba(255,255,255,0.06);
-  }
-
-  /* área info */
-  .info{
-    margin-top:12px;
-    font-size:12px;
-    opacity:0.9;
-    text-align:center;
-    width:100%;
-  }
-
-  /* SURRREAL SHAPES (se generan random en JS) */
-  .shape{
-    position:absolute;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    filter: blur(6px) saturate(140%);
-    opacity:.9;
-    transform-origin:center;
-  }
-
-  /* efectos glitch */
-  .glitch{
-    position:absolute;
-    left:50%;
-    top:8%;
-    transform:translateX(-50%);
-    font-weight:900;
-    letter-spacing:5px;
-    font-size:28px;
-    color:transparent;
-    -webkit-text-stroke:1px rgba(255,255,255,0.06);
-    mix-blend-mode:screen;
-    pointer-events:none;
-  }
-
-  .glitch::before, .glitch::after{
-    content: attr(data-text);
-    position:absolute;
-    left:0; top:0;
-  }
-  .glitch::before{ color: var(--neon); clip-path:polygon(0 0,100% 0,100% 40%,0 40%); transform:translate(-6px,-2px); opacity:.9;}
-  .glitch::after{ color: var(--accent); clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%); transform:translate(6px,2px); opacity:.9;}
-
-  /* responsivo */
-  @media (max-width:520px){
-    .panel{ width:92%; }
-  }
-</style>
+    button:hover {
+      background-color: #2e8a73;
+    }
+  </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="panel" id="panel">
-      <h1 id="titulo">CONTROL SURREALISTA</h1>
-      <div class="label">Volumen: <span id="volTxt">50%</span></div>
+  <h1>Control de Volumen Impráctico</h1>
 
-      <input type="range" id="volumen" min="0" max="1" step="0.01" value="0.5">
-
-      <div class="controls">
-        <button id="startBtn" class="primary">▶ ACTIVAR</button>
-        <button id="stopBtn" class="ghost">⏸ DETENER</button>
-        <button id="warpBtn" class="">✦ RE-RANDOM</button>
-      </div>
-
-      <div class="info" id="info">Diseño aleatorio — surrealismo con intención</div>
-    </div>
-
-    <!-- audio (no autoplay, espera interacción) -->
-    <audio id="miAudio" src="sonido.mp3" loop preload="auto"></audio>
-
-    <!-- glitch texto (decorativo) -->
-    <div class="glitch" id="glitch" data-text="SURREAL"></div>
+  <div class="control">
+    <label for="volumen">Volumen:</label>
+    <input type="range" id="volumen" min="0" max="1" step="0.01" value="0.5">
   </div>
 
-<script>
-/* ---------------------------
-   Surreal Randomizer + Control
-   ---------------------------
-   - Start / Stop audio
-   - Slider cambia volumen (0..1)
-   - Warp (re-randomiza diseño)
-   - Genera shapes aleatorias y animadas
-   - Detener limpia animaciones y pausa audio
-   - No dependencias externas
-*/
+  <button id="iniciar">🔊 Reproducir sonido</button>
 
-(() => {
-  const audio = document.getElementById('miAudio');
-  const vol = document.getElementById('volumen');
-  const volTxt = document.getElementById('volTxt');
-  const start = document.getElementById('startBtn');
-  const stop = document.getElementById('stopBtn');
-  const warp = document.getElementById('warpBtn');
-  const panel = document.getElementById('panel');
-  const info = document.getElementById('info');
-  const glitch = document.getElementById('glitch');
-  const stage = document.querySelector('.stage');
+  <audio id="miAudio" src="sonidoAlarma.mp3" loop></audio>
 
-  let shapes = [];      // ids de shapes
-  let animIntervals = []; // handles para limpiar
-  let alive = false;
+  <script>
+    const audio = document.getElementById("miAudio");
+    const volumen = document.getElementById("volumen");
+    const boton = document.getElementById("iniciar");
 
-  // utilidades random
-  const rnd = (min, max) => Math.random() * (max - min) + min;
-  const rint = (a,b) => Math.floor(rnd(a,b));
+    let clickCount = 0;
+    const mensajes = [
+      "🔊 Reproducir sonido",
+      "🎵 ¿Seguro que quieres esto?",
+      "🔁 ¡Otra vez!",
+      "🎶 Sigue intentando...",
+      "🔉 ¿Ya te arrepentiste?",
+      "🔇 Casi lo logras...",
+      "⏸️ ¡Sonido pausado!"
+    ];
 
-  // actualizar texto del volumen
-  const setVolTxt = v => volTxt.textContent = Math.round(v * 100) + '%';
+    // Configurar volumen inicial
+    audio.volume = volumen.value;
 
-  // aplica un set de variables CSS random a :root
-  function randomTheme(){
-    const neon = `hsl(${rint(160,320)} ${rint(70,100)}% ${rint(45,60)}%)`;
-    const accent = `hsl(${rint(0,360)} ${rint(60,100)}% ${rint(45,60)}%)`;
-    const bg1 = `hsl(${rint(180,260)} ${rint(20,60)}% ${rint(6,16)}%)`;
-    const bg2 = `hsl(${rint(0,360)} ${rint(20,50)}% ${rint(4,14)}%)`;
-    document.documentElement.style.setProperty('--neon', neon);
-    document.documentElement.style.setProperty('--accent', accent);
-    document.documentElement.style.setProperty('--bg', `linear-gradient(${rint(0,360)}deg, ${bg1}, ${bg2})`);
-    // efecto en el body background (no uso :root var para este caso)
-    document.body.style.background = `radial-gradient(circle at ${rint(10,90)}% ${rint(10,90)}%, ${bg1} 0%, ${bg2} 50%, #000 100%)`;
-  }
-
-  // crear shapes aleatorias
-  function spawnShapes(count = rint(6,12)){
-    // limpiar anteriores
-    shapes.forEach(id => {
-      const n = document.getElementById(id);
-      if(n) n.remove();
+    // Cambiar volumen al mover la barra
+    volumen.addEventListener("input", () => {
+      audio.volume = volumen.value;
     });
-    shapes = [];
 
-    for(let i=0;i<count;i++){
-      const el = document.createElement('div');
-      const id = 's' + Date.now() + i + Math.floor(Math.random()*9999);
-      el.id = id;
-      el.className = 'shape';
-      // tamaño y forma
-      const w = rint(36, 220);
-      const h = rint(36, 220);
-      const type = Math.random() > 0.6 ? 'circle' : (Math.random() > 0.5 ? 'rect' : 'blob');
-      // estilo base
-      el.style.width = w + 'px';
-      el.style.height = h + 'px';
-      el.style.left = rnd(-20, 80) + '%';
-      el.style.top = rnd(-20, 80) + '%';
-      el.style.opacity = (rnd(.12, .9)).toFixed(2);
-      el.style.transform = `rotate(${rint(-180,180)}deg)`;
-      const hue = rint(0,360);
-      const sat = rint(60,95);
-      const light = rint(45,65);
-      if(type === 'circle'){
-        el.style.borderRadius = '50%';
-        el.style.background = `radial-gradient(circle at 30% 30%, hsla(${hue} ${sat}% ${light}% / .95), hsla(${hue} ${sat}% ${light-30}% / .5))`;
-      } else if(type === 'blob'){
-        el.style.borderRadius = `${rint(10,60)}% ${rint(10,60)}% ${rint(10,60)}% ${rint(10,60)}% / ${rint(10,60)}% ${rint(10,60)}% ${rint(10,60)}% ${rint(10,60)}%`;
-        el.style.background = `linear-gradient(120deg, hsla(${hue} ${sat}% ${light}% / .9), hsla(${hue+40} ${sat}% ${light-15}% / .6))`;
-      } else {
-        el.style.borderRadius = '6px';
-        el.style.background = `conic-gradient(from ${rint(0,360)}deg, hsla(${hue} ${sat}% ${light}% / .95), transparent 50%)`;
-        el.style.filter = 'contrast(140%)';
+    // Reproducir o pausar audio con múltiples clics
+    boton.addEventListener("click", () => {
+      clickCount++;
+
+      if (clickCount === 1) {
+        audio.play().catch(error => console.error("Error al reproducir:", error));
       }
-      stage.appendChild(el);
-      shapes.push(id);
 
-      // animación aleatoria: flotación / giro / salto
-      const dur = rnd(4, 18);
-      const ampX = rnd(6, 28);
-      const ampY = rnd(6, 28);
-      let t = 0;
-      const handle = setInterval(() => {
-        if(!document.getElementById(id)) { clearInterval(handle); return; }
-        t += 0.03 * (1 + Math.random()*0.4);
-        const dx = Math.sin(t * (rnd(.4,1.6))) * ampX;
-        const dy = Math.cos(t * (rnd(.4,1.6))) * ampY;
-        const s = 1 + Math.sin(t*0.6)/12;
-        const rot = (Math.sin(t*0.3) * 12).toFixed(2);
-        // aplicar transform
-        // mantengo el left/top original mediante CSS variables? simple: usar translate
-        el.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${s})`;
-      }, rint(30,60));
-      animIntervals.push(handle);
-    }
-  }
+      if (clickCount === 7) {
+        audio.pause();
+        clickCount = 0; // Reiniciar para volver a empezar
+      }
 
-  // glitch pulso
-  function glitchPulse(){
-    glitch.style.opacity = 1;
-    let g = 0;
-    const id = setInterval(()=>{
-      glitch.style.transform = `translateX(${Math.sin(g)*8}px) translateY(${Math.cos(g*1.2)*4}px) rotate(${Math.sin(g/2)*2}deg)`;
-      g += 0.6 + Math.random()*0.8;
-    }, 60);
-    animIntervals.push(id);
-  }
-
-  // limpia animaciones e shapes
-  function clearSurreal(){
-    // clear intervals
-    animIntervals.forEach(i => clearInterval(i));
-    animIntervals = [];
-    // remove shapes
-    shapes.forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.remove();
+      boton.textContent = mensajes[Math.min(clickCount, mensajes.length - 1)];
     });
-    shapes = [];
-    // reset glitch
-    glitch.style.transform = '';
-  }
-
-  // START: inicia audio y efectos
-  function startAll(){
-    if(alive) return;
-    alive = true;
-    // intentar reproducir (user gesture required — estamos en click handler)
-    audio.volume = parseFloat(vol.value);
-    audio.play().catch(e => {
-      console.warn('play() rechazado:', e);
-    });
-    // visuales
-    panel.classList.add('hyped');
-    info.textContent = 'ACTIVADO — el caos creativo está ON';
-    // generar diseño
-    randomTheme();
-    spawnShapes();
-    glitchPulse();
-    // animación extra: panel baila
-    const panelAnim = setInterval(()=>{
-      panel.style.transform = `translateY(${Math.sin(Date.now()/600)*4}px) rotate(${Math.sin(Date.now()/900)*1.2}deg)`;
-    }, 60);
-    animIntervals.push(panelAnim);
-  }
-
-  // STOP: pausa audio y limpia
-  function stopAll(){
-    if(!alive) return;
-    alive = false;
-    audio.pause();
-    audio.currentTime = 0; // reinicia
-    panel.classList.remove('hyped');
-    info.textContent = 'DETENIDO — silencio y orden momentáneo';
-    clearSurreal();
-    // reset panel transform
-    panel.style.transform = '';
-    // small visual reset theme but keep background (nice touch)
-    setTimeout(()=> {
-      document.body.style.background = '';
-      document.documentElement.style.setProperty('--neon', '#00ffd7');
-      document.documentElement.style.setProperty('--accent', '#ff00c1');
-    }, 300);
-  }
-
-  // WARP: re-randomiza sin detener audio
-  function warpNow(){
-    // si está sonando: más locura, si no: prepara diseño nuevo
-    randomTheme();
-    clearSurreal();
-    spawnShapes();
-    glitchPulse();
-    info.textContent = alive ? 'RE-RANDOM — el sueño cambia' : 'RE-RANDOM listo (presiona ACTIVAR)';
-    // pequeño flash en panel
-    panel.animate([{boxShadow:'0 8px 30px rgba(0,0,0,0.6)'},{boxShadow:'0 0 50px rgba(255,255,255,0.06)'}],{duration:270,iterations:1});
-  }
-
-  // eventos
-  vol.addEventListener('input', (e) => {
-    const v = parseFloat(e.target.value);
-    audio.volume = v;
-    setVolTxt(v);
-  });
-
-  start.addEventListener('click', (e) => {
-    startAll();
-    // disabled style toggle
-    start.disabled = true;
-    stop.disabled = false;
-  });
-
-  stop.addEventListener('click', (e) => {
-    stopAll();
-    start.disabled = false;
-    stop.disabled = true;
-  });
-
-  warp.addEventListener('click', () => {
-    warpNow();
-  });
-
-  // init UI state
-  setVolTxt(parseFloat(vol.value));
-  stop.disabled = true;
-
-  // tiny easter: space toggles start/stop (if foco no en input)
-  window.addEventListener('keydown', (ev) => {
-    if(ev.code === 'Space' && document.activeElement.tagName !== 'INPUT'){
-      ev.preventDefault();
-      if(alive) { stop.click(); } else { start.click(); }
-    }
-  });
-
-  // si el usuario no interactúa y hay autoplay bloqueado, mostramos pista
-  audio.addEventListener('play', () => {
-    info.textContent = 'Audio reproduciendo — disfruta el caos';
-  });
-  audio.addEventListener('pause', () => {
-    if(!alive) info.textContent = 'Pausado';
-  });
-
-  // para no dejar intervals vivos si navegas lejos
-  window.addEventListener('beforeunload', clearSurreal);
-
-  // primer render random (sin activar)
-  randomTheme();
-  spawnShapes();
-})();
-</script>
+  </script>
 </body>
 </html>
-
