@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Portal Surrealista</title>
+
+<style>
+  body {
+    background: linear-gradient(120deg, #ff00f7, #ffd900, #00ffd5);
+    animation: glitch 5s infinite alternate;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Comic Sans MS", cursive;
+  }
+
+  @keyframes glitch {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+  }
+
+  .portal {
+    padding: 30px;
+    background: rgba(255,255,255,0.3);
+    border: 5px dashed black;
+    box-shadow: 0 0 25px black, inset 0 0 15px magenta;
+    border-radius: 25px;
+    text-align: center;
+  }
+
+  h2 {
+    color: black;
+    text-shadow: 2px 2px yellow;
+  }
+
+  button {
+    padding: 15px 25px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 15px;
+    font-size: 18px;
+    border: none;
+    font-weight: bold;
+    animation: wavy 1s infinite ease-in-out alternate;
+  }
+
+  @keyframes wavy {
+    from { transform: translateY(0); }
+    to { transform: translateY(-8px) rotate(2deg); }
+  }
+
+  .doc { background: #ff0099; color: yellow; box-shadow: 0 0 10px #ff00f7; }
+  .pract { background: cyan; color: purple; box-shadow: 0 0 10px #00fff9; }
+
+  button:hover {
+    filter: brightness(150%) saturate(200%);
+    transform: scale(1.1) rotate(3deg);
+  }
+</style>
+</head>
+
+<body>
+  <div class="portal">
+    <h2>Centro de Teletransportación Académica 🌀</h2>
+    
+    <button class="doc" onclick="location.href='documento.txt'">
+      📄 Ir al Documento
+    </button>
+
+    <button class="pract" onclick="location.href='index1.html'">
+      🧪 Ir a la Práctica
+    </button>
+  </div>
+</body>
+</html>
