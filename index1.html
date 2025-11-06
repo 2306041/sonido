@@ -3,59 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Volumen Impráctico</title>
+  <title>Volumen Feo y Confuso</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background-color: #f3f3f3;
+      background-color: #ffcc00;
+      font-family: "Papyrus", fantasy;
+      color: #ff0000;
+      text-align: center;
+      padding: 50px;
     }
 
     h1 {
-      color: #333;
+      font-size: 60px;
+      text-decoration: underline wavy blue;
     }
 
     .control {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
+      background-color: #00ff00;
+      border: 10px double magenta;
+      padding: 30px;
+      margin: 20px auto;
+      width: 80%;
     }
 
     input[type="range"] {
-      width: 300px;
-      margin-top: 10px;
+      width: 100px;
+      transform: rotate(270deg);
+      margin: 30px;
     }
 
     button {
-      padding: 10px 20px;
+      background-color: #ff00ff;
+      color: yellow;
+      font-size: 24px;
+      border: 5px dashed cyan;
+      padding: 15px;
       margin-top: 20px;
-      background-color: #40B495;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
+      cursor: crosshair;
     }
 
-    button:hover {
-      background-color: #2e8a73;
+    input[type="text"] {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 20px;
+      background-color: #0000ff;
+      color: white;
+      border: 3px solid red;
     }
   </style>
 </head>
 <body>
-  <h1>Control de Volumen Impráctico</h1>
+  <h1>🎶 Control de volumen</h1>
 
   <div class="control">
-    <label for="volumen">Volumen:</label>
+    <label for="volumen">Volumen:</label><br>
     <input type="range" id="volumen" min="0" max="1" step="0.01" value="0.5">
   </div>
 
-  <button id="iniciar">🔊 Reproducir sonido</button>
+  <button id="iniciar">¡Haz clic varias veces!</button><br>
+  <input type="text" id="clave" placeholder="Escribe la palabra mágica">
 
   <audio id="miAudio" src="sonidoAlarma.mp3" loop></audio>
 
@@ -63,41 +69,41 @@
     const audio = document.getElementById("miAudio");
     const volumen = document.getElementById("volumen");
     const boton = document.getElementById("iniciar");
+    const clave = document.getElementById("clave");
 
-    let clickCount = 0;
-    const mensajes = [
-      "🔊 Reproducir sonido",
-      "🎵 ¿Seguro que quieres esto?",
-      "🔁 ¡Otra vez!",
-      "🎶 Sigue intentando...",
-      "🔉 ¿Ya te arrepentiste?",
-      "🔇 Casi lo logras...",
-      "⏸️ ¡Sonido pausado!"
-    ];
+    let clics = 0;
 
-    // Configurar volumen inicial
     audio.volume = volumen.value;
 
-    // Cambiar volumen al mover la barra
     volumen.addEventListener("input", () => {
       audio.volume = volumen.value;
+      verificarPausa();
     });
 
-    // Reproducir o pausar audio con múltiples clics
     boton.addEventListener("click", () => {
-      clickCount++;
+      clics++;
+      boton.textContent = `Clic número ${clics}`;
+      boton.style.transform = `scale(${1 + clics * 0.1})`;
 
-      if (clickCount === 1) {
-        audio.play().catch(error => console.error("Error al reproducir:", error));
+      if (clics === 1) {
+        audio.play().catch(err => console.error("Error:", err));
       }
 
-      if (clickCount === 7) {
-        audio.pause();
-        clickCount = 0; // Reiniciar para volver a empezar
-      }
-
-      boton.textContent = mensajes[Math.min(clickCount, mensajes.length - 1)];
+      verificarPausa();
     });
+
+    clave.addEventListener("input", verificarPausa);
+
+    function verificarPausa() {
+      if (clics >= 3 && clave.value.toUpperCase() === "PAUSA" && volumen.value === "0") {
+        audio.pause();
+        alert("¡Sonido pausado! ¿Por qué así? Nadie lo sabe.");
+        clics = 0;
+        clave.value = "";
+        boton.textContent = "¡Haz clic varias veces!";
+        boton.style.transform = "scale(1)";
+      }
+    }
   </script>
 </body>
 </html>
